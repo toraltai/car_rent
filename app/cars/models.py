@@ -25,16 +25,21 @@ class Car(Model):
     volume = fields.CharField(25)
     gear = fields.CharField(25)
     engine = fields.CharField(25)
-    transmission = fields.CharField(25, description='Коробка передач')
+    transmission = fields.CharField(25)
     color = fields.CharField(25)
     price = fields.CharField(25)
     period = fields.CharEnumField(Period)
     category = fields.CharField(25)
+    discount_price = fields.CharField(25)
     # user: fields.ForeignKeyRelation[User] = fields.ForeignKeyField(
     #     "models.User", related_name="cars")
 
+    @classmethod
+    async def calculate(cls, price):
+        return cls.update['discount_price']
+    
     class Meta:
         table = "cars"
 
 GetCar = pydantic_model_creator(Car, name="Car")
-CreateCar = pydantic_model_creator(Car, name="CarIn", exclude_readonly=True)
+CreateCar = pydantic_model_creator(Car, name="CarIn", exclude_readonly=True, exclude=['discount_price'])
