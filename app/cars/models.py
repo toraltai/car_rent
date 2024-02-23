@@ -36,10 +36,12 @@ class Car(Model):
 
     @classmethod
     async def calculate(cls, price):
-        return cls.update['discount_price']
+        calculated_price = price + "str"
+        return calculated_price
     
     class Meta:
         table = "cars"
 
 GetCar = pydantic_model_creator(Car, name="Car")
 CreateCar = pydantic_model_creator(Car, name="CarIn", exclude_readonly=True, exclude=['discount_price'])
+
