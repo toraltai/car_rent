@@ -20,18 +20,18 @@ async def create_car(car: CreateCar):
     return await GetCar.from_tortoise_orm(car_obj)
 
 
-@carRouter.get('/car_list', response_model=List[GetCar])
+@carRouter.get('/car_list', response_model=List[GetCar], description='Список всех машин')
 async def get_car():
     return await GetCar.from_queryset(Car.all())
 
 
-@carRouter.get('/car/{car_id}', response_model=GetCar)
-async def car_get_by_id(car_id):
+@carRouter.get('/car/{car_id}', response_model=GetCar,description='Получение по айди')
+async def get_car_by_id(car_id):
     return await GetCar.from_queryset_single(Car.get(id=car_id))
 
 
-@carRouter.put('/car/{car_id}', response_model=GetCar)
-async def car_get_by_id(car_id):
+@carRouter.put('/car/{car_id}', response_model=GetCar, description='Изменения по айди')
+async def put_car_by_id(car_id):
     await Car.filter(id=car_id).update(**car_id.model_dump(exclude_unset=True))
     return await Car.from_queryset_single(Car.get(id=car_id))
 
