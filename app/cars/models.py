@@ -3,6 +3,7 @@ from tortoise.models import Model
 from dataclasses import dataclass
 from tortoise.contrib.pydantic import pydantic_model_creator
 
+from app.users.models import User
 from app.enums import *
 
 
@@ -43,8 +44,8 @@ class Car(Model):
     category: fields.ForeignKeyRelation[Category] = fields.ForeignKeyField(
         "models.Category", related_name="cars")
     discount_price = fields.CharField(25)
-    # user: fields.ForeignKeyRelation[User] = fields.ForeignKeyField(
-    #     "models.User", related_name="cars")
+    company: fields.ForeignKeyRelation[User] = fields.ForeignKeyField(
+        "models.User", related_name="cars")
 
     @classmethod
     async def calculate(cls, price):

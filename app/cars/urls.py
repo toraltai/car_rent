@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException, Response
-from typing import List
+from fastapi import APIRouter, HTTPException, Depends, Response
+from typing import List, Annotated
 from pydantic import BaseModel
 # from .models import Car, GetCar, CreateCar, GetCategory
+from app.users.auth import get_current_user
 from .models import *
 
 
@@ -62,10 +63,11 @@ async def remove(object_: int):
 
 # EndPoints for Car(CRUD)
 @carRouter.post('/', response_model=GetCar, description="Api for add car")
-async def create_car(car: CreateCar):
+async def create_car(car: CreateCar, current_user: Annotated[User, Depends(get_current_user)]): #type: ignore
     price = await Car.calculate(car.price)
     car_obj = await Car.create(**car.dict(exclude_unset=True),
-                               discount_price = price)
+                               discount_price = price,
+                               company_id = current_user.id)
     return await GetCar.from_tortoise_orm(car_obj)
 
 @carRouter.get('/{car_id}', response_model=GetCar,description='Получение по айди')
@@ -73,9 +75,10 @@ async def get_car_by_id(car_id):
     return await GetCar.from_queryset_single(Car.get(id=car_id))
 
 @carRouter.put('/{car_id}', response_model=GetCar, description='Изменения по айди')
-async def put_car_by_id(car_id: int, car_obj: CreateCar):
+async def put_car_by_id(car_id: int, car_obj: CreateCar, current_user: Annotated[User, Depends(get_current_user)]): #type: ignore
     await Car.get(id=car_id).update(**car_obj.model_dump(exclude_unset=True))
     return await GetCar.from_queryset_single(Car.get(id=car_id))
+
 
 @carRouter.get('/list', response_model=List[GetCar], description='Список всех машин')
 async def get_car():

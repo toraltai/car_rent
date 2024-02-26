@@ -7,6 +7,7 @@ DB_URL = "sqlite://db.sqlite3"
 
 
 APPS_MODEL = [
+    'app.users.models',
     'app.cars.models',
 ]
 
