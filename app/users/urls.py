@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Form
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
+from typing import Optional
 
 import jwt
 
@@ -13,9 +14,9 @@ userRouter=APIRouter()
 
 
 @userRouter.post('/register', response_model=GetUser)
-async def create_user(user: CreateUser): #type: ignore
+async def create_user(user: CreateUser, role: Optional[str] = 'partner'): #type: ignore
     user_obj = User(name=user.name,
-                    role = 'partner',
+                    role = role,
                     password_hash=bcrypt.hash(user.password_hash))
     await user_obj.save()
     return await GetUser.from_tortoise_orm(user_obj)
@@ -40,10 +41,16 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
                "Authorization": f"Bearer {token}"}
 
     response = JSONResponse(context, headers=headers)
-
     return response
 
 
 @userRouter.get('/me', response_model=GetUser)
 async def get_user(user: GetUser = Depends(get_current_user)): # type: ignore
     return user
+
+
+{
+  "name": "string",
+  "role": "admin",
+  "password_hash": "string"
+}
