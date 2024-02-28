@@ -20,7 +20,11 @@ async def create_category(cat_obj: CreateCategory):
     category_obj = await Category.create(title = cat_obj.title)
     return {"id":category_obj.id, "title":category_obj.title}
 
-@carUtils.get('/category', response_model=GetCategory, summary="Single object")
+@carUtils.get('/all', response_model=List[GetCategory])
+async def all_list():
+    return await GetCategory.from_queryset(Category.all())
+
+@carUtils.get('/category/{cat_id}', response_model=GetCategory, summary="Single object")
 async def get(obj_id: int):
     return await GetCategory.from_queryset_single(Category.get(id=obj_id))
 
@@ -70,16 +74,15 @@ async def create_car(car: CreateCar, current_user: Annotated[User, Depends(get_c
                                company_id = current_user.id)
     return await GetCar.from_tortoise_orm(car_obj)
 
-@carRouter.get('/{car_id}', response_model=GetCar,description='Получение по айди')
+@carRouter.get('/obj/{car_id}', response_model=GetCar,description='Получение по айди')
 async def get_car_by_id(car_id):
     return await GetCar.from_queryset_single(Car.get(id=car_id))
 
-@carRouter.put('/{car_id}', response_model=GetCar, description='Изменения по айди')
+@carRouter.put('/obj/{car_id}', response_model=GetCar, description='Изменения по айди')
 async def put_car_by_id(car_id: int, car_obj: CreateCar, current_user: Annotated[User, Depends(get_current_user)]): #type: ignore
     await Car.get(id=car_id).update(**car_obj.model_dump(exclude_unset=True))
     return await GetCar.from_queryset_single(Car.get(id=car_id))
 
-
-@carRouter.get('/list', response_model=List[GetCar], description='Список всех машин')
-async def get_car():
-    return await GetCar.from_queryset(Car.all())
+@carRouter.get('/all', response_model=List[GetCar])
+async def all_list():
+    return await GetCar.from_queryset(Car.all().prefetch_related('category'))
