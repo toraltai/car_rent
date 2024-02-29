@@ -20,7 +20,7 @@ async def create_category(cat_obj: CreateCategory):
     category_obj = await Category.create(title = cat_obj.title)
     return {"id":category_obj.id, "title":category_obj.title}
 
-@carUtils.get('/all', response_model=List[GetCategory])
+@carUtils.get('/category/all', response_model=List[GetCategory])
 async def all_list():
     return await GetCategory.from_queryset(Category.all())
 
@@ -47,6 +47,10 @@ async def remove(cat_obj: int):
 async def post(object_: CreateColor):
     color_obj = await Color.create(title = object_.title)
     return {"id":color_obj.id, "title":color_obj.title}
+
+@carUtils.get('/color/all', response_model=List[GetColor])
+async def all_list():
+    return await GetColor.from_queryset(Color.all())
 
 @carUtils.get('/color', response_model=GetColor, summary="Single object")
 async def get(obj_id: int):

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
-from typing import Optional
+from typing import Optional, List
 
 import jwt
 
@@ -49,8 +49,6 @@ async def get_user(user: GetUser = Depends(get_current_user)): # type: ignore
     return user
 
 
-{
-  "name": "string",
-  "role": "admin",
-  "password_hash": "string"
-}
+@userRouter.get('/all', response_model=List[GetUser], summary='API for fetching all users')
+async def get_list():
+    return await GetUser.from_queryset(User.all())

@@ -6,7 +6,7 @@ from app.users.models import User, GetUser
 import jwt
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/v1/user/login')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/v1/users/login')
 
 
 async def authenticate_user(username: str, password: str):

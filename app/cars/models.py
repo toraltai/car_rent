@@ -57,5 +57,5 @@ class Car(Model):
 
 Tortoise.init_models(["app.cars.models"], "models")
 GetCar = pydantic_model_creator(Car, name="Car")
-CreateCar = pydantic_model_creator(Car, name="CarIn", exclude_readonly=True, exclude=['discount_price'])
+CreateCar = pydantic_model_creator(Car, name="CarIn", exclude_readonly=True, exclude=['discount_price','company_id'])
 
