@@ -32,11 +32,11 @@ GetColor = pydantic_model_creator(Color)
 class Car(Model):
     id = fields.IntField(pk=True)
     title = fields.CharField(25)
-    born = fields.DateField()
+    born = fields.CharField(4)
     volume = fields.CharField(25)
-    gear = fields.CharField(25)
-    engine = fields.CharField(25)
-    transmission = fields.CharField(25)
+    gear = fields.CharField(25) # Привод
+    engine = fields.CharField(25) # Двигатель
+    transmission = fields.CharField(25) # Коробка передач
     color: fields.ForeignKeyRelation[Color] = fields.ForeignKeyField(
         "models.Color", related_name="cars")
     price = fields.CharField(25)
@@ -55,7 +55,9 @@ class Car(Model):
     class Meta:
         table = "cars"
 
-Tortoise.init_models(["app.cars.models"], "models")
-GetCar = pydantic_model_creator(Car, name="Car")
-CreateCar = pydantic_model_creator(Car, name="CarIn", exclude_readonly=True, exclude=['discount_price','company_id'])
+exclude_fields = ['company.password_hash',
+                  'company.role']
 
+Tortoise.init_models(["app.cars.models"], "models")
+GetCar = pydantic_model_creator(Car, name="Car", exclude=exclude_fields)
+CreateCar = pydantic_model_creator(Car, name="CarIn", exclude_readonly=True, exclude=['discount_price','company_id'])

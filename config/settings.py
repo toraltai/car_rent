@@ -1,3 +1,4 @@
+import logging
 
 
 SECRET_KEY = 'h08-66zc=*hle+^yjrt8!jhu2&58t=)+ww1*z8&&9((l$i_^9='
@@ -7,6 +8,7 @@ DB_URL = "sqlite://db.sqlite3"
 
 
 APPS_MODEL = [
+    'app.requests.models',
     'app.users.models',
     'app.cars.models',
 ]

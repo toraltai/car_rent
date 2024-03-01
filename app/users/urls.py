@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Form
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from typing import Optional, List
@@ -36,11 +36,11 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
 
     token = jwt.encode(token_payload, settings.SECRET_KEY, algorithm='HS256')
     context = {'access_token' : token, 'token_type' : 'bearer'}
-    
-    headers = {"Accept": "application/json",
-               "Authorization": f"Bearer {token}"}
 
-    response = JSONResponse(context, headers=headers)
+    response = Response("Hello World", status_code=status.HTTP_302_FOUND)
+    response.set_cookie(key="access_token", value=f"Bearer {token}", httponly=True)
+    
+    response = JSONResponse(context)
     return response
 
 

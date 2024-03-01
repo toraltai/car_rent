@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Response
 from typing import List, Annotated
 from pydantic import BaseModel
-# from .models import Car, GetCar, CreateCar, GetCategory
 from app.users.auth import get_current_user
 from .models import *
 
@@ -30,7 +29,7 @@ async def get(obj_id: int):
 
 @carUtils.put('/category/{cat_id}', response_model=GetCategory, description='Изменение по айди')
 async def put_by_id(cat_id: int, obj: CreateCategory):
-    await Category.get(id=cat_id).update(**obj.model_dump(exclude_unset=True))
+    await Category.get(id=cat_id).update(title=obj.title)
     return await GetCategory.from_queryset_single(Color.get(id=cat_id))
 
 @carUtils.delete('/category')
@@ -58,7 +57,7 @@ async def get(obj_id: int):
 
 @carUtils.put('/color/{color_id}', response_model=GetColor, description='Изменение по айди')
 async def put_by_id(color_id: int, obj: CreateColor):
-    await Color.get(id=color_id).update(**obj.model_dump(exclude_unset=True))
+    await Color.get(id=color_id).update(title=obj.title)
     return await GetColor.from_queryset_single(Color.get(id=color_id))
 
 @carUtils.delete('/color')
@@ -80,7 +79,8 @@ async def create_car(car: CreateCar, current_user: Annotated[User, Depends(get_c
 
 @carRouter.get('/obj/{car_id}', response_model=GetCar,description='Получение по айди')
 async def get_car_by_id(car_id):
-    return await GetCar.from_queryset_single(Car.get(id=car_id))
+    return await GetCar.from_queryset_single(Car.filter(id=car_id)
+                                             .select_related('category','color','company').get())
 
 @carRouter.put('/obj/{car_id}', response_model=GetCar, description='Изменения по айди')
 async def put_car_by_id(car_id: int, car_obj: CreateCar, current_user: Annotated[User, Depends(get_current_user)]): #type: ignore
@@ -90,3 +90,5 @@ async def put_car_by_id(car_id: int, car_obj: CreateCar, current_user: Annotated
 @carRouter.get('/all', response_model=List[GetCar])
 async def all_list():
     return await GetCar.from_queryset(Car.all().prefetch_related('category'))
+
+
