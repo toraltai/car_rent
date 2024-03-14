@@ -69,7 +69,7 @@ async def remove(object_: int):
 
 
 # EndPoints for Car(CRUD)
-@carRouter.post('/', response_model=GetCar, description="Api for add car")
+@carRouter.post('/', response_model=GetCar, summary="Api for add car")
 async def create_car(car: CreateCar, current_user: Annotated[User, Depends(get_current_user)]): #type: ignore
     price = await Car.calculate(car.price)
     car_obj = await Car.create(**car.dict(exclude_unset=True),
@@ -77,18 +77,45 @@ async def create_car(car: CreateCar, current_user: Annotated[User, Depends(get_c
                                company_id = current_user.id)
     return await GetCar.from_tortoise_orm(car_obj)
 
-@carRouter.get('/obj/{car_id}', response_model=GetCar,description='Получение по айди')
+@carRouter.get('/obj/{car_id}', response_model=GetCar, summary='Получение по айди')
 async def get_car_by_id(car_id):
     return await GetCar.from_queryset_single(Car.filter(id=car_id)
                                              .select_related('category','color','company').get())
 
-@carRouter.put('/obj/{car_id}', response_model=GetCar, description='Изменения по айди')
+@carRouter.put('/obj/{car_id}', response_model=GetCar, summary='Изменения по айди')
 async def put_car_by_id(car_id: int, car_obj: CreateCar, current_user: Annotated[User, Depends(get_current_user)]): #type: ignore
     await Car.get(id=car_id).update(**car_obj.model_dump(exclude_unset=True))
     return await GetCar.from_queryset_single(Car.get(id=car_id))
 
+@carRouter.get('/sort/{category_id}', response_model=List[GetCar], summary='Фильтрация по категориям')
+async def all_list(category_id: int):
+    return await GetCar.from_queryset(Car.filter(category_id=category_id)
+                                       .select_related('category', 'color', 'company'))
+
+@carRouter.get('/sort/{company_id}', response_model=List[GetCar], summary='Фильтрация по компаниям')
+async def all_list(company_id: int):
+    return await GetCar.from_queryset(Car.filter(company_id=company_id)
+                                       .select_related('category', 'color', 'company'))
+
+@carRouter.get('/list', response_model=List[GetCar], summary='Список данной компании')
+async def all_list(current_company: Annotated[User, Depends(get_current_user)]):
+    return await GetCar.from_queryset(Car.filter(company_id=current_company.id)
+                                       .select_related('category', 'color', 'company'))
+
 @carRouter.get('/all', response_model=List[GetCar])
-async def all_list():
-    return await GetCar.from_queryset(Car.all().prefetch_related('category'))
+async def get():
+    return await GetCar.from_queryset(Car.all()
+                                      .select_related('category', 'color', 'company'))
 
-
+@carRouter.delete('/obj')
+async def remove(object_: int):
+    car_object = await Car.get_or_none(id=object_)
+    if not car_object:
+        raise HTTPException(status_code=404, detail=f"Something wrong")
+    return Status(message=f"Car {car_object.title} was deleted")
+# from tortoise import connections
+# @carRouter.get('/all')
+# async def all_list():
+#     # return await GetCar.from_queryset(Car.all().prefetch_related('category'))
+#     conn = connections.get('default')
+#     return await conn.execute_query_dict("select * from cars")

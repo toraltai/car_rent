@@ -3,29 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import routers
 from config import settings
 from tortoise.contrib.fastapi import register_tortoise
-import logging
-
-import logging
-logging.basicConfig()
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
-
-def setup_sql_logging():
-    # Включаем журналирование
-    logging.basicConfig()
-    logger = logging.getLogger('aiosqlite')
-    logger.setLevel(logging.DEBUG)
-
-    # Создаем собственный обработчик для вывода сообщений в консоль
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG)
-    logger.addHandler(handler)
 
 
 app = FastAPI(title='Documentation',
               description="",
               version="0.1.0",)
 
-setup_sql_logging()
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,9 +24,9 @@ app.add_middleware(
 )
 
 
-@app.get("/home")
-async def hello():
-    return {"Hello":"World"}
+# @app.get("/home")
+# async def hello():
+#     return {"Hello":"World"}
 
 
 # @app.middleware("http")
