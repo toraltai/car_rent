@@ -17,6 +17,7 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:3000",
         'https://asia-leasing.netlify.app',
+        'https://next-asia-leasing.vercel.app',
         ],
     allow_credentials=True,
     allow_methods=["*"],
