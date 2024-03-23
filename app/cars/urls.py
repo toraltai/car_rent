@@ -36,7 +36,7 @@ async def put_by_id(cat_id: int, obj: CreateCategory):
 async def remove(cat_obj: int):
     category = await Category.get_or_none(id=cat_obj)
     if not category:
-        raise HTTPException(status_code=404, detail=f"Category {cat_obj} not found")
+        raise HTTPException(status_code=404, detail=f"Category doesn't exist!!!")
     await category.delete()
     return Status(message=f"Deleted category {category.title}")
 
@@ -62,10 +62,11 @@ async def put_by_id(color_id: int, obj: CreateColor):
 
 @carUtils.delete('/color')
 async def remove(object_: int):
-    deleted_count = await Color.filter(id=object_).delete()
-    if not deleted_count:
-        raise HTTPException(status_code=404, detail=f"User {object_} not found")
-    return Status(message=f"Deleted user {object_}")
+    color_object = await Color.get_or_none(id=object_)
+    if not color_object:
+        raise HTTPException(status_code=404, detail=f"Color doesn't exist!!!")
+    await color_object.delete()
+    return Status(message=f"Deleted color: {color_object.title}")
 
 
 # EndPoints for Car(CRUD)
@@ -111,8 +112,11 @@ async def get():
 async def remove(object_: int):
     car_object = await Car.get_or_none(id=object_)
     if not car_object:
-        raise HTTPException(status_code=404, detail=f"Something wrong")
-    return Status(message=f"Car {car_object.title} was deleted")
+        raise HTTPException(status_code=404, detail=f"Car doesn't exist")
+    await car_object.delete()
+    # return Status(message=f"Car {car_object.title} was deleted")
+    return Status(message=f"Car was deleted")
+
 # from tortoise import connections
 # @carRouter.get('/all')
 # async def all_list():
