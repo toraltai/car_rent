@@ -38,11 +38,11 @@ class Car(Model):
     engine = fields.CharField(25) # Двигатель
     transmission = fields.CharField(25) # Коробка передач
     color: fields.ForeignKeyRelation[Color] = fields.ForeignKeyField(
-        "models.Color", related_name="cars")
+        "models.Color", related_name="cars", on_delete=fields.SET_NULL, null=True)
     price = fields.CharField(25)
     period = fields.CharEnumField(Period)
     category: fields.ForeignKeyRelation[Category] = fields.ForeignKeyField(
-        "models.Category", related_name="cars")
+        "models.Category", related_name="cars", on_delete=fields.SET_NULL, null=True)
     discount_price = fields.CharField(25)
     company: fields.ForeignKeyRelation[User] = fields.ForeignKeyField(
         "models.User", related_name="cars")
